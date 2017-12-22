@@ -1,7 +1,11 @@
 import Problems.EightQueenProblem
+import Problems.graphpartitioning
+import hillCilmbing
 
 a = Problems.EightQueenProblem.EighQueenProblem()
+b = Problems.graphpartitioning.GraphPartitioningProblem()
 
 
-for i in a.neighbors(a.initial_state()):
-    print(a.competency(i))
+hillc = hillCilmbing.HillClimbing()
+hillc.setProblem(a)
+hillc.search('rand-start')
