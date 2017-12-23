@@ -38,7 +38,6 @@ class GraphPartitioningProblem(Problem):
         return l
 
     def competency(self, state):
-        print(state)
         cost = np.abs(6 - len(state)) * 2
         for i in range(len(state)):
             for v in self.graph[state[i]]:

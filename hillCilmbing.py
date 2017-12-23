@@ -2,6 +2,7 @@ import Problems.problem
 import numpy as np
 import random
 
+
 class HillClimbing:
     def __init__(self):
         self.problem = Problems.problem.Problem()
@@ -48,7 +49,6 @@ class HillClimbing:
         else:
             self.rand_start_search(random.sample(range(0, 8), 8), True)
             print("RAND : Find Answer or Local : ", bestState, " with score : ", best)
-
 
     def first_search(self, state):
         self.counter += 1
