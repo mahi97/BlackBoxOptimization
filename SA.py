@@ -8,7 +8,9 @@ class SA:
         self.problem = Problems.problem.Problem
         self.counter = 0
         self.BS = []
-        self.B = 1000000
+        self.B = 100000
+        self.nodeSeen = 0
+        self.nodeExpand = 0
 
     def set_problem(self, _problem):
         self.problem = _problem
@@ -31,6 +33,7 @@ class SA:
 
         bestList = []
         for s in self.problem.neighbors(state):
+            self.nodeSeen += 1
             if self.problem.competency(s) <= best:
                 bestList.append(s)
 
@@ -38,9 +41,11 @@ class SA:
         r =  random.random()
         if r < p(self.counter):
             print("NOT Find Answer or Local : ", state, " with score : ", best)
+            self.nodeExpand += 1
             self.first_search(self.problem.neighbors(state)[np.random.randint(0, len(self.problem.neighbors(state)))], p)
         elif len(bestList) != 0:
             print("BEST Find Answer or Local : ", state, " with score : ", best)
+            self.nodeExpand += 1
             self.first_search(bestList[np.random.randint(0, len(bestList))], p)
 
         # for s in self.problem.neighbors(state):

@@ -8,6 +8,8 @@ class HillClimbing:
         self.problem = Problems.problem.Problem()
         self.counter = 0
         self.Best = 0
+        self.nodeSeen = 0
+        self.nodeExpand = 0
         self.BestState = []
 
     def setProblem(self, _problem):
@@ -34,6 +36,7 @@ class HillClimbing:
             self.BestState = bestState
         find = False
         for s in self.problem.neighbors(state):
+            self.nodeSeen += 1
             if self.problem.competency(s) < best:
                 best = self.problem.competency(s)
                 bestState = s
@@ -45,8 +48,10 @@ class HillClimbing:
 
         if find:
             print("Find Answer or Local : ", bestState, " with score : ", best)
+            self.nodeExpand += 1
             self.rand_start_search(bestState, False)
         else:
+            self.nodeExpand += 1
             self.rand_start_search(random.sample(range(0, 8), 8), True)
             print("RAND : Find Answer or Local : ", bestState, " with score : ", best)
 
@@ -61,7 +66,9 @@ class HillClimbing:
             print("Find Answer or Local : ", state, " with score : ", best)
 
         for s in self.problem.neighbors(state):
+            self.nodeSeen += 1
             if self.problem.competency(s) < best:
+                self.nodeExpand += 1
                 self.first_search(s)
                 break
 
@@ -70,12 +77,14 @@ class HillClimbing:
         best = self.problem.competency(state)
         bestList = []
         for s in self.problem.neighbors(state):
+            self.nodeSeen += 1
             if self.problem.competency(s) <= best:
                 bestList.append(s)
         if best == 0 or self.counter > 200 or len(bestList) is 0:
             print("Find Answer or Local : ", state, " with score : ", best)
         else:
             print("Find Answer or Local : ", state, " with score : ", best)
+            self.nodeExpand += 1
             self.rand_search(bestList[np.random.randint(0, len(bestList))])
 
     def simple_search(self, state):
@@ -83,11 +92,13 @@ class HillClimbing:
         bestState = state
         find = False
         for s in self.problem.neighbors(state):
+            self.nodeSeen += 1
             if self.problem.competency(s) < best:
                 best = self.problem.competency(s)
                 bestState = s
                 find = True
         if find:
+            self.nodeExpand += 1
             self.simple_search(bestState)
         else:
             print("Find Answer or Local : ", bestState, " with score : ", best)

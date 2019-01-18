@@ -1,19 +1,22 @@
 import Problems.problem
 import random
-import pprint
+
 
 class Genetic:
     def __init__(self):
-        self.chromosomes = 6
-        self.Maxgeneration = 50
+        self.chromosomes = 2
+        self.Maxgeneration = 3000
         self.currentGen = 0
-        self.mutationRate = 1
-        self.crossoverRate = 2
+        self.mutationRate = .2
+        self.crossoverRate = .35
         self.chromosomesList = []
         self.fitness = []
         self.prob = []
         self.problem = Problems.problem.Problem()
         self.ans = []
+        self.bestG = []
+        self.meanG = []
+        self.worstG = []
 
     def generate_chromosome(self):
         for _ in range(self.chromosomes):
@@ -22,46 +25,58 @@ class Genetic:
     def evaluation_fitness(self):
         self.currentGen += 1
         fitness = []
-        self.fitness.clear()
         for c in self.chromosomesList:
             fitness.append(self.problem.competency(c))
+        self.fitness.clear()
         for f in fitness:
             self.fitness.append(1 / (1 + f))
 
     def select_chromosome(self):
+        print(self.chromosomesList)
         total = sum(self.fitness)
         cumulative = []
+        self.prob.clear()
         for f in self.fitness:
             self.prob.append(f / total)
             cumulative.append(sum(self.prob))
+
+        best = 0
+        bestid = 0
+        for i in range(len(self.prob)):
+            if self.prob[i] > best:
+                best = self.prob[i]
+                bestid = i
+
+        newChromosomesList = [self.chromosomesList[bestid][:]]
         newChromosomesList = []
-        for _ in self.chromosomesList:
-            rand = random.random()
+        for _ in range(self.chromosomes):
+            rand = random.uniform(0, 1)
             count = 0
             for c in cumulative:
                 if rand < c:
-                    newChromosomesList.append(self.chromosomesList[count])
+                    newChromosomesList.append(self.chromosomesList[count][:])
                     break
                 else:
                     count += 1
         self.chromosomesList = newChromosomesList
+        print(self.chromosomesList)
 
     def cross_over(self):
         parent = []
         for i in range(self.chromosomes):
             if random.random() < self.crossoverRate:
-                parent.append(self.chromosomesList[i])
+                if self.chromosomesList[i] not in parent:
+                    parent.append(self.chromosomesList[i][:])
         child = []
-        for i in parent:
-            for j in parent:
-                r = random.randint(1, 3)
-                c = i[:r] + j[r:]
-                child.append(c)
-        diff = len(child) - len(parent)
-        for p in parent:
-            if diff > 0:
-                self.chromosomesList.remove(p)
-                diff -= 1
+        if len(parent) < 2:
+            return
+        for i in range(len(parent)):
+            for j in range(i, len(parent)):
+                if i is not j:
+                    r = random.randint(1, 3)
+                    c = parent[i][:r] + parent[j][r:]
+                    child.append(c)
+
         for c in child:
             self.chromosomesList.append(c)
 
@@ -73,13 +88,19 @@ class Genetic:
             self.chromosomesList[int(rand / 4)][rand % 4] = random.randint(0, 30)
 
     def end(self):
+        fitness = []
+        ans = False
         for c in self.chromosomesList:
+            fitness.append(self.problem.competency(c))
             if self.problem.competency(c) == 0:
                 self.ans = c
-                return True
+                ans = True
         if self.currentGen > self.Maxgeneration:
-            return True
-        return False
+            ans = True
+        self.bestG.append(min(fitness))
+        self.worstG.append(max(fitness))
+        self.meanG.append(sum(fitness) / len(fitness))
+        return ans
 
     def answer(self):
         print('ANS is : ', self.ans)
